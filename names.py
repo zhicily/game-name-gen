@@ -1,6 +1,7 @@
 import random
+import string
 
-def nameGen():
+def nameGen(numbers=False):
     prefixes = ['AL', 'AM', 'AN', 'AP', 'AQ', 'AR', 'AS', 'AT', 'AU', 'AV', 'AZ', 'A_',
                 'BE', 'BI', 'BL', 'BO', 'BR', 'BU', 'B_',
                 'CH', 'CI', 'CL', 'CO', 'CR', 'CU', 'CY', 'C_',
@@ -42,7 +43,7 @@ def nameGen():
 
     has_num = random.randint(0, 1)
 
-    if has_num == 1:
+    if numbers == True and has_num == 1:
         num_letters = random.randint(4, length - 1)
     
     num_nums = length - num_letters
@@ -51,71 +52,45 @@ def nameGen():
 
     assert(len(name) == 3)
 
-    curr_substr = -1
+    new_substr = -1
 
     while len(name) < num_letters:
-        if curr_substr == 1 or curr_substr == 2:
-            i = 0
+        if new_substr == 1 or new_substr == 2:
+            curr_substr = 0
         elif num_letters - len(name) > 1:
-            i = random.randint(0, 2)
+            curr_substr = random.randint(0, 2)
         else:
-            i = random.randint (0, 1)
+            curr_substr = random.randint (0, 1)
 
-        assert(i != 3)
+        assert(curr_substr != 3)
 
         if num_letters - len(name) == 2:
-            j = random.randint(0, 1)
+            has_suffix = random.randint(0, 1)
 
-            if j == 1:
+            if has_suffix == 1:
                 name = name + suffixes[random.randint(0, len(suffixes) - 1)]
-                break
 
-        if i == 0:
-            name = name + vowels[random.randint(0, len(vowels) - 1)]
-            curr_substr = 0
-        elif i == 1:
-            name = name + consanants[random.randint(0, len(consanants) - 1)]
-            curr_substr = 1
-        elif i == 2: 
-            name = name + substr[random.randint(0, len(substr) - 1)]
-            curr_substr = 2
+        else:
+            if curr_substr == 0:
+                name = name + vowels[random.randint(0, len(vowels) - 1)]
+                new_substr = 0
+            elif curr_substr == 1:
+                name = name + consanants[random.randint(0, len(consanants) - 1)]
+                new_substr = 1
+            elif curr_substr == 2: 
+                name = name + substr[random.randint(0, len(substr) - 1)]
+                new_substr = 2
         
     if num_nums > 1:
-        j = random.randint(0, 1)
+        underscore = random.randint(0, 1)
 
-        if j == 1:
+        if underscore == 1:
             name = name + '_'
     
     while len(name) < length:
         name = name + nums[random.randint(0, len(nums) - 1)]
 
-    return name.lower()
+    name = name.lower()
+    name = string.capwords(name)
 
-def check(name):
-    # banned substrings in game naming conventions
-    bad = ['shit', 'fuck', 'rape', 'uncle', 'cum', 'penis', 'weed', 'crack', 'gay', 'fuk', 'twat', 
-    'shiz', 'poop', 'fuq', 'anus', 'anal', 'sex', 'boob', 'smexy', 'phuc', 'skype']
-
-    for word in bad:
-        if word in name:
-            return False
-    
-    return True
-        
-if __name__ == '__main__':
-    f = open('stuck.txt', 'w')
-
-    for i in range(1, 5001):
-        name = nameGen()
-        
-        while check(name) == False:
-            name = nameGen()
-
-        f.write('<a href="neopets.com/~')
-        f.write(name)
-        f.write('"><img src="http://pets.neopets.com/cpn/')
-        f.write(name)
-        f.write('/1/2.png"></a>')
-        f.write('\n')
-    
-    f.close()
+    return name
